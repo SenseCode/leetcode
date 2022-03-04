@@ -69,31 +69,68 @@ class Solution(object):
         :rtype: List[List[str]]
         """
 
-        graph=collections.defaultdict(list)
-        for account in accounts:
-            master=account[1]
-            for email in set(account[2:])
-                graph[master].append(email)
-                graph[email].append(master)
-        print("graph",graph)
+    #     graph=collections.defaultdict(list)
+    #     for account in accounts:
+    #         master=account[1]
+    #         for email in set(account[2:])
+    #             graph[master].append(email)
+    #             graph[email].append(master)
+    #     print("graph",graph)
+    #
+    #     res=[]
+    #     visited=set()
+    #
+    #     for account in accounts:
+    #         emails=[]
+    #         self.dfs(account[1],graph,visited,emails)
+    #         if emails:
+    #             res.append([account[0]]+sorted(emails))
+    #     return res
+    #
+    # def dfs(self, email, graph, visited, emails):
+    #     if email in visited:
+    #         return
+    #     visited.add(email)
+    #     emails.append(email)
+    #     for neighbor in graph[email]:
+    #         self.dfs(neighbor,graph, visited, emails)
 
-        res=[]
-        visited=set()
+        graph=collections.defaultdict(set)
+        emailToName={}
 
-        for account in accounts:
-            emails=[]
-            self.dfs(account[1],graph,visited,emails)
-            if emails:
-                res.append([account[0]]+sorted(emails))
-        return res
+        for acct in accounts:
+            name=acct[0]
+            print('name',name)
+            #build edge for all emails:
+            email1=acct[1]
+            emailToName[email1]=name
+            print("1",emailToName)
+            for email2 in acct[2:]:
+                graph[email1].add(email2)
+                graph[email2].add(email1)
+                emailToName[email2]=name
+                print("2",emailToName )
+        ans=[]
+        seen=set()
+        print('emailToName',emailToName)
+        print('graph',graph)
 
-    def dfs(self, email, graph, visited, emails):
-        if email in visited:
-            return
-        visited.add(email)
-        emails.append(email)
-        for neighbor in graph[email]:
-            self.dfs(neighbor,graph, visited, emails)
+        for email in emailToName:
+            if email not in seen:
+                stack=[email]
+                seen.add(email)
+                emails=[]
 
+                while stack:
+                    cur=stack.pop()
+                    emails.append(cur)
+
+                    for nei in graph[cur]:
+                        if nei not in seen:
+                            stack.append(nei)
+                            seen.add(nei)
+                ans.append([emailToName[email]]+sorted(emails))
+
+        return ans
 
 # leetcode submit region end(Prohibit modification and deletion)
